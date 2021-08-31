@@ -7,7 +7,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - DB_ENDPOINT=xx
-      - CHAIN_ADDR=xx
+      - CHAIN_ENDPOINT=xx
       - START_FROM=xx
       - Storage_Timer=xx
       - API_USER=xx
