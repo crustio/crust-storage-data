@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  storage-data:
+    image: storage-data
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+      - DB_ENDPOINT=xx
+      - CHAIN_ADDR=xx
+      - START_FROM=xx
+      - Storage_Timer=xx
+      - API_USER=xx
+      - API_PASS=xx
+      - PORT=xx
