@@ -12,11 +12,31 @@ import { bytesToTeraBytes, convertBN, parseObj } from './util';
 import _ from 'lodash';
 import { port, apiUser, apiPass } from './env';
 import { exportStorageInfo } from './services/xlsxService';
+import mcache  from "memory-cache";
+
 const basicAuth = require('express-basic-auth');
 
 const l = logger('main');
 
 const app = express();
+
+const cache = (duration: number) => {
+  return (req: any, res: any, next: any) => {
+    let key = '__express__' + req.originalUrl || req.url
+    let cachedBody = mcache.get(key)
+    if (cachedBody) {
+      res.send(cachedBody)
+      return
+    } else {
+      res.sendResponse = res.send
+      res.send = (body: any) => {
+        mcache.put(key, body, duration * 1000);
+        res.sendResponse(body)
+      }
+      next()
+    }
+  }
+}
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -42,14 +62,14 @@ main().catch(e => {
   process.exit(1);
 });
 
-app.get('/api/storage', async (_, res) => {
+app.get('/api/storage', cache(60*30), async (_, res) => {
   res.send({
     status: 'success',
     data: await storage.storageList()
   })
 });
 
-app.get('/api/totalStorage', async (_, res) => {
+app.get('/api/totalStorage', cache(60*30), async (_, res) => {
   const api = await _api.isReadyOrError;
   const free = parseObj(await api.query.swork.free());
   const reportedFilesSize = parseObj(await api.query.swork.reportedFilesSize());
@@ -60,7 +80,7 @@ app.get('/api/totalStorage', async (_, res) => {
   })
 });
 
-app.get('/api/exportStorageInfo', async (req, res) => {
+app.get('/api/exportStorageInfo', cache(60*30), async (req, res) => {
   const result = await exportStorageInfo();
   res.setHeader('Content-Type', 'application/vnd.openxmlformats');
   res.setHeader("Content-Disposition", "attachment; filename=" + result.name);
