@@ -6,11 +6,12 @@ export const exportStorageInfo = async () => {
     const storageList = await storage.storageList();
     const names = ["存储信息概览"]
     const listData = [];
-    listData.push(["日期", "总存储量"]);
+    listData.push(["日期", "总存储量", ["总结点数"]]);
     for (const storage of storageList) {
         const row = [];
         row.push(moment(storage.date).format('YYYY-MM-DD'));
         row.push(storage.totalStorage);
+        row.push(storage.totalPeers);
         listData.push(row);
     }
     const xlsxName = `${moment().format('YYYY-MM-DD HH:mm:ss')}_storage.csv`;
