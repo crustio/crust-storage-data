@@ -40,9 +40,7 @@ const cache = (duration: number) => {
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(basicAuth({
-  users: { [apiUser]: apiPass }
-}));
+app.use(cache(60*30))
 
 // TODO: add error handling
 const main = async () => {
@@ -62,14 +60,18 @@ main().catch(e => {
   process.exit(1);
 });
 
-app.get('/api/storage', cache(60*30), async (_, res) => {
+app.get('/api/storage', basicAuth({
+  users: { [apiUser]: apiPass }
+}), async (_, res) => {
   res.send({
     status: 'success',
     data: await storage.storageList()
   })
 });
 
-app.get('/api/totalStorage', cache(60*30), async (_, res) => {
+app.get('/api/totalStorage', basicAuth({
+  users: { [apiUser]: apiPass }
+}), async (_, res) => {
   const api = await _api.isReadyOrError;
   const free = parseObj(await api.query.swork.free());
   const reportedFilesSize = parseObj(await api.query.swork.reportedFilesSize());
@@ -80,7 +82,7 @@ app.get('/api/totalStorage', cache(60*30), async (_, res) => {
   })
 });
 
-app.get('/api/exportStorageInfo', cache(60*30), async (req, res) => {
+app.get('/api/exportStorageInfo', async (_, res) => {
   const result = await exportStorageInfo();
   res.setHeader('Content-Type', 'application/vnd.openxmlformats');
   res.setHeader("Content-Disposition", "attachment; filename=" + result.name);
