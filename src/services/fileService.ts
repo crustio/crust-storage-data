@@ -8,6 +8,20 @@ const config = {
   headers: { }
 };
 
+const subscanQueryData = JSON.stringify({"row":1,"page":0});
+
+const subscanConfig = {
+  method: 'post',
+  url: 'https://crust.api.subscan.io/api/scan/swork/orders',
+  headers: { 
+    'Content-Type': 'application/json', 
+    'X-API-Key': '5962d7416ae2a5eaf4de837972c11606'
+  },
+  data : subscanQueryData
+};
+
+const DEFAULT_ORDER_COUNT = 288705
+
 export const filePrice = async () => {
     const api = await _api.isReadyOrError;
     const fileBaseFee = await api.query.market.fileBaseFee();
@@ -25,4 +39,14 @@ export const filePrice = async () => {
         return 0
     }
 
+}
+
+export const orderCount = async () => {
+    try {
+        const orderInfoResponse = await axios(subscanConfig);
+        const orderCount = orderInfoResponse?.data?.data?.count
+        return orderCount
+    } catch (error) {
+        return DEFAULT_ORDER_COUNT;
+    }
 }
