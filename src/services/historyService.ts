@@ -34,7 +34,7 @@ export default class HistoryService {
         }, null, true);
     }
 
-    private async getTotalStorage() {
+    async getTotalStorage() {
         const free = parseObj(await this.api.query.swork.free());
         const currentSlot = parseObj(await this.api.query.swork.currentReportSlot());
         const workReports = parseObj(await this.api.query.swork.workReports.entries());
