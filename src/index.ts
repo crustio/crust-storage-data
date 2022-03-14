@@ -1,8 +1,7 @@
 import { logger } from '@polkadot/util';
 import pRetry from 'p-retry';
-import { nodeWatcher } from './nodeWatcher';
+import { historyService, nodeWatcher } from './nodeWatcher';
 import express from 'express';
-import {argv} from 'process';
 import cors from 'cors';
 // eslint-disable-next-line node/no-extraneous-import
 import bodyParser from 'body-parser';
@@ -13,6 +12,7 @@ import _ from 'lodash';
 import { port, apiUser, apiPass } from './env';
 import { exportStorageInfo } from './services/xlsxService';
 import mcache  from "memory-cache";
+import { filePrice, orderCount } from './services/fileService';
 
 const basicAuth = require('express-basic-auth');
 
@@ -69,6 +69,24 @@ app.get('/api/storage', basicAuth({
   })
 });
 
+app.get('/api/filePrice', basicAuth({
+  users: { [apiUser]: apiPass }
+}), async (_, res) => {
+  res.send({
+    status: 'success',
+    data: await filePrice()
+  })
+});
+
+app.get('/api/orderCount', basicAuth({
+  users: { [apiUser]: apiPass }
+}), async (_, res) => {
+  res.send({
+    status: 'success',
+    data: await orderCount()
+  })
+});
+
 app.get('/api/totalStorage', basicAuth({
   users: { [apiUser]: apiPass }
 }), async (_, res) => {
@@ -87,6 +105,13 @@ app.get('/api/exportStorageInfo', async (_, res) => {
   res.setHeader('Content-Type', 'application/vnd.openxmlformats');
   res.setHeader("Content-Disposition", "attachment; filename=" + result.name);
   res.end(result.file, 'binary');
+});
+
+app.get('/api/totalValidNodes', async (_, res) => {
+  res.send({
+    status: 'success',
+    data: (await historyService.getTotalStorage()).validReports.length
+  })
 });
 
 process.on('uncaughtException', (err: Error) => {

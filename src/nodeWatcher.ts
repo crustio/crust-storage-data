@@ -27,6 +27,7 @@ function waitFinalized(
 let blockIndex = START_FROM;
 
 export let _api: ApiPromise;
+export let historyService: HistoryService;
 
 export async function nodeWatcher(): Promise<unknown> {
     return new Promise((_, reject) => {
@@ -50,7 +51,7 @@ export async function nodeWatcher(): Promise<unknown> {
                 reject(new Error(`Api disconnected: ${e}`));
             });
 
-            const historyService = new HistoryService(api);
+            historyService = new HistoryService(api);
             const blockInDb = await block.latestBlockFromDb();
 
             if (Storage_Timer == 'true') {
