@@ -36,7 +36,7 @@ export const filePrice = async () => {
         return usdPrice.toNumber() / 1000000000000.0
     } catch (error) {
         console.log(error)
-        return 0
+        return 0.000001
     }
 
 }

@@ -116,6 +116,7 @@ app.get('/api/totalValidNodes', async (_, res) => {
 
 process.on('uncaughtException', (err: Error) => {
   l.log(`uncaughtException, ${err.message}`)
+  process.exit(1)
 });
 
 app.listen(port, () => { l.log('App listening on port ' + port) });
