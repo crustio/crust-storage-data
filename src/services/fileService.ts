@@ -29,10 +29,10 @@ export const filePrice = async () => {
     const fileByteFee = await api.query.market.fileByteFee();
     const fileKeysCountFee = await api.query.market.fileKeysCountFee();
     try {
-        const filePrice = new BN(fileByteFee.toString()).muln(512).add(new BN(fileBaseFee.toString())).add(new BN(fileKeysCountFee.toString()))
+        const filePrice = new BN(fileByteFee.toString()).muln(2048).add(new BN(fileBaseFee.toString())).add(new BN(fileKeysCountFee.toString()))
         const cruAssetsResponse = await axios(config);
         const data = cruAssetsResponse?.data?.data
-        const usdPrice =  filePrice.addn(Number(data?.priceUsd))
+        const usdPrice = filePrice.muln(Number(data?.priceUsd))
         return usdPrice.toNumber() / 1000000000000.0
     } catch (error) {
         console.log(error)
