@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 
 const CAPACITY_SIZES = ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-const CAPACITY_BASE_UNIT = 1024;
+export const CAPACITY_BASE_UNIT = 1024;
 
 const CAPACITY_UNIT = 1024*1024*1024;
 const MILLION_CAPACITY_UNIT = new BN(CAPACITY_UNIT.toString());

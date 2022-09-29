@@ -12,7 +12,7 @@ import _ from 'lodash';
 import { port, apiUser, apiPass } from './env';
 import { exportStorageInfo } from './services/xlsxService';
 import mcache  from "memory-cache";
-import { filePrice, orderCount } from './services/fileService';
+import { fileOrderPrice, filePrice, orderCount } from './services/fileService';
 
 const basicAuth = require('express-basic-auth');
 
@@ -75,6 +75,15 @@ app.get('/api/filePrice', basicAuth({
   res.send({
     status: 'success',
     data: await filePrice()
+  })
+});
+
+app.get('/api/fileOrderPrice/:fileSize', basicAuth({
+  users: { [apiUser]: apiPass }
+}), async (req, res) => {
+  res.send({
+    status: 'success',
+    data: await fileOrderPrice(req.params.fileSize)
   })
 });
 
