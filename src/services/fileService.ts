@@ -1,6 +1,7 @@
 import { _api } from '../nodeWatcher';
 import BN from 'bn.js';
 import { CAPACITY_BASE_UNIT, convertBN } from '../util';
+import mcache from "memory-cache";
 const axios = require('axios');
 
 const DEFAULT_FILE_PRICE = 0.000001;
@@ -16,14 +17,14 @@ const subscanQueryData = JSON.stringify({"row":1,"page":0});
 const subscanConfig = {
   method: 'post',
   url: 'https://crust.api.subscan.io/api/scan/swork/orders',
-  headers: { 
-    'Content-Type': 'application/json', 
+  headers: {
+    'Content-Type': 'application/json',
     'X-API-Key': '5962d7416ae2a5eaf4de837972c11606'
   },
   data : subscanQueryData
 };
 
-const DEFAULT_ORDER_COUNT = 288705
+const DEFAULT_ORDER_COUNT = 2417281
 
 export const filePrice = async () => {
     const api = await _api.isReadyOrError;
@@ -67,9 +68,18 @@ export const fileOrderPrice = async (fileSize: any) => {
 
 export const orderCount = async () => {
     try {
+        const key = 'crustOrderCount'
+        let cachedBody = mcache.get(key)
+        if (cachedBody) {
+            return cachedBody;
+        }
         const orderInfoResponse = await axios(subscanConfig);
         const orderCount = orderInfoResponse?.data?.data?.count
-        return orderCount
+        if (orderCount) {
+            mcache.put(key, orderCount, 10 * 60 * 1000)
+            return orderCount
+        }
+        return DEFAULT_ORDER_COUNT;
     } catch (error) {
         return DEFAULT_ORDER_COUNT;
     }
